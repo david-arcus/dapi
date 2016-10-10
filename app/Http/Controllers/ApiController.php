@@ -52,7 +52,7 @@ class ApiController extends Controller
 
     public function uploadImage(Request $request) {
 
-      $bucketPath = 'https://s3-' . env('S3_BUCKET_REGION') . 'amazonaws.com/' . env('S3_BUCKET_NAME') . '/';
+      $bucketPath = 'https://s3-' . env('S3_BUCKET_REGION') . '.amazonaws.com/' . env('S3_BUCKET_NAME') . '/';
 
       $imageName = $this->millitime() . $this->randomString() . '.jpg';
 
@@ -74,8 +74,7 @@ class ApiController extends Controller
 
       } catch (S3Exception $e) {
 
-        echo $e->getMessage() . "\n";
-        return;
+        return Response::json(array('status' => 'exception', 'message' => $e->getMessage()), 400);
 
       }
 
