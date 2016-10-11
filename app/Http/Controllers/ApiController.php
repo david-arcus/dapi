@@ -50,9 +50,11 @@ class ApiController extends Controller
 
     }
 
-    public function uploadImage(Request $request) {
+    public function saveImage(Request $request) {
 
-      $bucketPath = 'https://s3-' . env('S3_BUCKET_REGION') . '.amazonaws.com/' . env('S3_BUCKET_NAME') . '/';
+      // $bucketPath = 'https://s3.' . env('S3_BUCKET_REGION') . '.amazonaws.com/' . env('S3_BUCKET_NAME') . '/';
+      
+      $bucketPath = 'https://s3.amazonaws.com/' . env('S3_BUCKET_NAME') . '/';
 
       $imageName = $this->millitime() . $this->randomString() . '.jpg';
 
