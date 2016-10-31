@@ -21,15 +21,16 @@ class ApiController extends Controller
     }
 
     private function base64ToJpeg($base64String, $outputFile) {
+              
+        $ifp = fopen($outputFile, "wb");
 
-      $ifp = fopen($outputFile, "wb");
+        $data = explode(',', $base64String);
 
-      $data = explode(',', $base64String);
+        fwrite($ifp, base64_decode($data[1]));
+        fclose($ifp);
 
-      fwrite($ifp, base64_decode($data[1]));
-      fclose($ifp);
-
-      return $outputFile;
+        return $outputFile;
+        
 
     }
 
