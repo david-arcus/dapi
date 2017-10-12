@@ -92,7 +92,7 @@ class ApiController extends Controller
         $results[] = $label->description();
       }
 
-      return Response::json(array('status' => 'success', 'results' => $results), 400);
+      return Response::json(array('status' => 'success', 'results' => $results));
 
 
     }
