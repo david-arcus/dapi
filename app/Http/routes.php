@@ -15,5 +15,6 @@ Route::group(['prefix' => 'api'], function()
 {
   // POST api calls
   Route::post('save-image', 'ApiController@saveImage');
+  Route::post('describe-image', 'ApiController@describeImage');
 
 });

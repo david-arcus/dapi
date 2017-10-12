@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Response;
+use \Google\Cloud\ServiceBuilder;
 
 
 class ApiController extends Controller
@@ -20,8 +21,36 @@ class ApiController extends Controller
         //$this->middleware('auth');
     }
 
+    private function getGoogleCloudVisionTextAnnotations($image) {
+
+      $keyFilePath = storage_path('app/' . env('KEY_FILE'));
+      $projectId = 'even-stranger-things';
+
+      $cloud = new ServiceBuilder([
+          'keyFilePath' => $keyFilePath,
+          'projectId' => $projectId
+      ]);
+
+      $vision = $cloud->vision();
+
+      //$imageResource = file_get_contents($imagePath);
+
+      $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $image));
+
+      $image = $vision->image($data, [
+        'LABEL_DETECTION'
+      ]);
+
+      $labels = $vision->annotate($image)->labels();
+
+      // $annotations = $vision->annotate($image);
+
+      return $labels;
+
+    }
+
     private function base64ToJpeg($base64String, $outputFile) {
-              
+
         $ifp = fopen($outputFile, "wb");
 
         $data = explode(',', $base64String);
@@ -30,7 +59,7 @@ class ApiController extends Controller
         fclose($ifp);
 
         return $outputFile;
-        
+
 
     }
 
@@ -51,10 +80,27 @@ class ApiController extends Controller
 
     }
 
+    public function describeImage(Request $request) {
+
+      $image = $request['image'];
+
+      $labels = $this->getGoogleCloudVisionTextAnnotations($image);
+
+      $results = array();
+
+      foreach ($labels as $label) {
+        $results[] = $label->description();
+      }
+
+      return Response::json(array('status' => 'success', 'results' => $results), 400);
+
+
+    }
+
     public function saveImage(Request $request) {
 
       // $bucketPath = 'https://s3.' . env('S3_BUCKET_REGION') . '.amazonaws.com/' . env('S3_BUCKET_NAME') . '/';
-      
+
       $bucketPath = 'https://s3.amazonaws.com/' . env('S3_BUCKET_NAME') . '/';
 
       $imageName = $this->millitime() . $this->randomString() . '.jpg';
